@@ -3,11 +3,12 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log("Seeding...");
-  await prisma.idempotencyKey.deleteMany();
-  await prisma.reservation.deleteMany();
-  await prisma.stock.deleteMany();
-  await prisma.product.deleteMany();
-  await prisma.warehouse.deleteMany();
+
+  const existing = await prisma.warehouse.count();
+  if (existing > 0) {
+    console.log("✅ Already seeded, skipping.");
+    return;
+  }
 
   const mumbai = await prisma.warehouse.create({ data: { name: "Mumbai Central", location: "Mumbai, MH" } });
   const delhi = await prisma.warehouse.create({ data: { name: "Delhi Hub", location: "Delhi, DL" } });
